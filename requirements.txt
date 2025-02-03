@@ -1,0 +1,6 @@
+streamlit          # For the frontend
+pandas             # For managing the CSV tracker
+python-docx        # For handling Word document templates
+pathlib            # For file management
+os                 # For directory operations
+openai             # For context generation
