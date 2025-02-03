@@ -46,8 +46,8 @@ def main():
     os.makedirs(output_subfolder, exist_ok=True)
     
     # Output file paths
-    resume_output = os.path.join(output_subfolder, "customized_resume.docx")
-    cover_letter_output = os.path.join(output_subfolder, "customized_cover_letter.docx")
+    resume_output = os.path.join(output_subfolder, "henry_pai_resume.docx")
+    cover_letter_output = os.path.join(output_subfolder, "henry_pai_cover_letter.docx")
     
     # Replacements dictionary
     replacements = {
