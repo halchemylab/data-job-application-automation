@@ -1,22 +1,29 @@
 import os
 import datetime
 from docx import Document
+from docx.shared import Pt
 
-def replace_placeholders(text, replacements):
-    """Replaces placeholders in a given text with provided replacements."""
+def replace_placeholders(paragraph, replacements):
+    """Replaces placeholders in a given paragraph while preserving formatting."""
     for placeholder, value in replacements.items():
-        text = text.replace(placeholder, value)
-    return text
+        if placeholder in paragraph.text:
+            for run in paragraph.runs:
+                if placeholder in run.text:
+                    run.text = run.text.replace(placeholder, value)
+                    if placeholder in ["{{JOB_POSITION}}", "{{COMPANY_NAME}}"]:
+                        run.bold = True
+                        run.font.size = Pt(16)
 
 def process_word_document(template_path, output_path, replacements):
-    """Reads a Word document, replaces placeholders, and saves a new version."""
+    """Reads a Word document, replaces placeholders, and saves a new version while preserving formatting."""
     doc = Document(template_path)
     for para in doc.paragraphs:
-        para.text = replace_placeholders(para.text, replacements)
+        replace_placeholders(para, replacements)
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
-                cell.text = replace_placeholders(cell.text, replacements)
+                for para in cell.paragraphs:
+                    replace_placeholders(para, replacements)
     doc.save(output_path)
 
 def main():
@@ -46,6 +53,8 @@ def main():
     replacements = {
         "{{JOB_POSITION}}": job_position,
         "{{COMPANY_NAME}}": company_name,
+        "{{JOB_POSITION_p}}": job_position,
+        "{{COMPANY_NAME_p}}": company_name,
         "{{SPECIFIC_JOB_PROJECT}}": specific_job_project,
         "{{IT_SKILLS}}": required_it_skills,
         "{{CURRENT_DATE}}": current_date,
