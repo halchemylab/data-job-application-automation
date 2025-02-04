@@ -1,30 +1,33 @@
-import requests
-from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 import openai
 import os
 import re
+from bs4 import BeautifulSoup
 
 # Temporary hardcoded OpenAI API Key for testing
 openai.api_key = "your_openai_api_key_here"
 
 def extract_job_details(url):
-    """Scrapes job details from a given URL and extracts structured information using OpenAI API."""
-    headers = {"User-Agent": "Mozilla/5.0"}
-    response = requests.get(url, headers=headers)
+    """Scrapes job details from a given URL using Selenium and extracts structured information using OpenAI API."""
+    options = Options()
+    options.headless = True  # Runs browser in headless mode (no UI)
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
-    if response.status_code != 200:
-        print("Failed to fetch job listing. Status code:", response.status_code)
-        return None
+    driver.get(url)
+    page_text = driver.page_source  # Get full rendered page source
+    driver.quit()
     
-    soup = BeautifulSoup(response.text, "html.parser")
-    
-    # Extract full webpage text
+    # Parse the page with BeautifulSoup to extract readable text
+    soup = BeautifulSoup(page_text, "html.parser")
     page_text = soup.get_text(separator="\n", strip=True)
     
     # Print raw scraped data (for debugging)
-    print("\n=== Raw Scraped Page Text ===")
-    print(page_text[:2000])  # Print first 2000 chars only
-    print("===========================\n")
+    # print("\n=== Raw Scraped Page Text ===")
+    # print(page_text[:2500])  # Print first 2500 chars only
+    # print("===========================\n")
     
     # Send full page text to OpenAI for structured extraction
     prompt = f"""
