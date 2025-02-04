@@ -47,7 +47,7 @@ def extract_job_details(url):
     """
     
     response = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-4o-mini",
         messages=[{"role": "system", "content": "Extract structured job details."},
                   {"role": "user", "content": prompt}]
     )
