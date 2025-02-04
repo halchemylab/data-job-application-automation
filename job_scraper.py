@@ -24,12 +24,19 @@ def extract_job_details(url):
     soup = BeautifulSoup(page_text, "html.parser")
     page_text = soup.get_text(separator="\n", strip=True)
     
-    # Print raw scraped data (for debugging)
-    # print("\n=== Raw Scraped Page Text ===")
-    # print(page_text[:2500])  # Print first 2500 chars only
-    # print("===========================\n")
+    # Remove excessive new lines and blank spaces
+    page_text = "\n".join([line.strip() for line in page_text.split("\n") if line.strip()])
     
-    # Send full page text to OpenAI for structured extraction
+    # Limit character count to avoid unnecessary OpenAI token usage
+    max_chars = 8000  # Limit input to 6000 characters
+    page_text = page_text[:max_chars]
+    
+    # Print processed scraped data (for debugging)
+    print("\n=== Processed Scraped Page Text ===")
+    print(page_text[:8000])  # Print first 2000 chars only
+    print("===========================\n")
+    
+    # Send filtered text to OpenAI for structured extraction
     prompt = f"""
     Extract structured information from the following job posting:
     
@@ -47,7 +54,7 @@ def extract_job_details(url):
     """
     
     response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
+        model="gpt-4o",
         messages=[{"role": "system", "content": "Extract structured job details."},
                   {"role": "user", "content": prompt}]
     )
