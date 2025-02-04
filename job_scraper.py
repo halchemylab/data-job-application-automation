@@ -6,6 +6,12 @@ import openai
 import os
 import re
 from bs4 import BeautifulSoup
+import nltk
+from nltk.corpus import stopwords
+
+# Download stop words
+nltk.download('stopwords')
+stop_words = set(stopwords.words('english'))
 
 # Temporary hardcoded OpenAI API Key for testing
 openai.api_key = "your_openai_api_key_here"
@@ -27,20 +33,24 @@ def extract_job_details(url):
     # Remove excessive new lines and blank spaces
     page_text = "\n".join([line.strip() for line in page_text.split("\n") if line.strip()])
     
+    # Remove stop words to minimize text size
+    words = page_text.split()
+    minimized_text = ' '.join([word for word in words if word.lower() not in stop_words])
+    
     # Limit character count to avoid unnecessary OpenAI token usage
-    max_chars = 8000  # Limit input to 6000 characters
-    page_text = page_text[:max_chars]
+    max_chars = 8000  # Limit input to 8000 characters
+    minimized_text = minimized_text[:max_chars]
     
     # Print processed scraped data (for debugging)
     print("\n=== Processed Scraped Page Text ===")
-    print(page_text[:8000])  # Print first 2000 chars only
+    print(minimized_text[:8000])  # Print first 8000 chars only
     print("===========================\n")
     
     # Send filtered text to OpenAI for structured extraction
     prompt = f"""
     Extract structured information from the following job posting:
     
-    {page_text}
+    {minimized_text}
     
     Provide the following details:
     - Job Position

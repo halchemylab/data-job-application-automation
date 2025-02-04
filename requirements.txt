@@ -4,3 +4,5 @@ python-docx        # For handling Word document templates
 pathlib            # For file management
 os                 # For directory operations
 openai             # For context generation
+ntlk               # For natural language processing before context generation
+selenium           # For bypassing web scraping
