@@ -50,8 +50,7 @@ def extract_job_details(url):
     minimized_text = minimized_text[:max_chars]
     
     # Print processed scraped data (for debugging)
-    print("Input Total characters feed into API: ", len(minimized_text))
-    print("\n=== Processed Scraped Page Text ===")
+    print("\n=== Processed Scraped Page Text (first 2000 char) ===")
     print(minimized_text[:2000])  # Print first 2000 chars only
     print("===========================\n")
     
@@ -73,20 +72,26 @@ def extract_job_details(url):
     """
     
     response = client.chat.completions.create(
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[{"role": "system", "content": "Extract structured job details."},
                   {"role": "user", "content": prompt}]
     )
-    
+
     extracted_data = response.choices[0].message.content.strip()
     
     # Convert structured text into a dictionary
     job_details_dict = {}
     for line in extracted_data.split("\n"):
-        if ": " in line:
-            key, value = line.split(": ", 1)
-            job_details_dict[key.strip()] = value.strip()
-    
+        line = line.strip()
+        print(f"Processing line: {line}")  # Debugging
+
+        # Extract key-value pairs, handling Markdown bold formatting (**Job Position**:)
+        match = re.match(r"^- \*\*(.+?)\*\*: (.+)$", line)
+        if match:
+            key = match.group(1).strip()  # Extract field name (without bold formatting)
+            value = match.group(2).strip()  # Extract value
+            job_details_dict[key] = value
+
     # Store extracted details in separate variables for easy access
     job_position = job_details_dict.get("Job Position", "Unknown")
     company_name = job_details_dict.get("Company Name", "Unknown")
