@@ -8,13 +8,18 @@ import re
 from bs4 import BeautifulSoup
 import nltk
 from nltk.corpus import stopwords
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+if openai.api_key is None:
+    raise ValueError("OpenAI API key not found. Make sure to set it in a .env file.")
 
 # Download stop words
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
-
-# Temporary hardcoded OpenAI API Key for testing
-openai.api_key = "your_openai_api_key_here"
 
 def extract_job_details(url):
     """Scrapes job details from a given URL using Selenium and extracts structured information using OpenAI API."""
@@ -42,8 +47,9 @@ def extract_job_details(url):
     minimized_text = minimized_text[:max_chars]
     
     # Print processed scraped data (for debugging)
+    print("Input Total characters feed into API: ", len(minimized_text))
     print("\n=== Processed Scraped Page Text ===")
-    print(minimized_text[:8000])  # Print first 8000 chars only
+    print(minimized_text[:2000])  # Print first 2000 chars only
     print("===========================\n")
     
     # Send filtered text to OpenAI for structured extraction
@@ -69,7 +75,7 @@ def extract_job_details(url):
                   {"role": "user", "content": prompt}]
     )
     
-    extracted_data = response["choices"][0]["message"]["content"].strip()
+    extracted_data = response.choices[0].message.content.strip()
     
     # Convert structured text into a dictionary
     job_details_dict = {}
