@@ -79,18 +79,24 @@ def extract_job_details(url):
 
     extracted_data = response.choices[0].message.content.strip()
     
+    # Debugging: Print raw OpenAI response
+    print(f"Raw OpenAI response:\n{extracted_data}\n")
+    
     # Convert structured text into a dictionary
     job_details_dict = {}
     for line in extracted_data.split("\n"):
         line = line.strip()
         print(f"Processing line: {line}")  # Debugging
 
-        # Extract key-value pairs, handling Markdown bold formatting (**Job Position**:)
-        match = re.match(r"^- \*\*(.+?)\*\*: (.+)$", line)
+        # Updated regex to allow flexible whitespace and optional leading dash
+        match = re.match(r"^\s*-?\s*\*\*(.+?)\*\*:\s*(.+)$", line)
+        
         if match:
             key = match.group(1).strip()  # Extract field name (without bold formatting)
             value = match.group(2).strip()  # Extract value
             job_details_dict[key] = value
+        else:
+            print(f"Failed to match line: {line}")  # Debugging
 
     # Store extracted details in separate variables for easy access
     job_position = job_details_dict.get("Job Position", "Unknown")
