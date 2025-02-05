@@ -59,7 +59,27 @@ def extract_job_details(url):
     Extract structured information from the following job posting:
     
     {minimized_text}
-    
+
+    ### **Response Formatting Guidelines**
+
+    - **Use the exact format below.**
+    - **Do not add any extra text or explanations.**
+    - **Ensure each field is formatted as: `- **Field Name**: Value`**
+    - **Field names must be exactly as given below.**
+    - **If information is missing, write "Unknown". Do NOT modify field names.**
+
+    ### **Response Format (Example)**
+    - **Job Position**: Software Engineer
+    - **Company Name**: Google
+    - **Specific Job Project**: Developing cloud-based AI solutions
+    - **Required IT Skills**: Python, TensorFlow, Cloud Computing
+    - **Job Type**: Full-Time
+    - **Remote Work**: Yes
+    - **Job Description Summary**: You will design and develop scalable machine learning applications.
+    - **Perks Summary**: Competitive salary, stock options, remote work options, and health benefits.
+
+    Now, extract details from the job posting and follow the exact format above.
+
     Provide the following details:
     - Job Position
     - Company Name
@@ -79,14 +99,11 @@ def extract_job_details(url):
 
     extracted_data = response.choices[0].message.content.strip()
     
-    # Debugging: Print raw OpenAI response
-    print(f"Raw OpenAI response:\n{extracted_data}\n")
-    
     # Convert structured text into a dictionary
     job_details_dict = {}
     for line in extracted_data.split("\n"):
         line = line.strip()
-        print(f"Processing line: {line}")  # Debugging
+        # print(f"Processing line: {line}")  # Debugging
 
         # Updated regex to allow flexible whitespace and optional leading dash
         match = re.match(r"^\s*-?\s*\*\*(.+?)\*\*:\s*(.+)$", line)
@@ -96,7 +113,7 @@ def extract_job_details(url):
             value = match.group(2).strip()  # Extract value
             job_details_dict[key] = value
         else:
-            print(f"Failed to match line: {line}")  # Debugging
+            print(f"Failed to match line: {line}")  # Debugging for error lines
 
     # Store extracted details in separate variables for easy access
     job_position = job_details_dict.get("Job Position", "Unknown")
