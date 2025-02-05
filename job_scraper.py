@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-import openai
+from openai import OpenAI
 import os
 import re
 from bs4 import BeautifulSoup
@@ -12,10 +12,13 @@ from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 
-if openai.api_key is None:
+if api_key is None:
     raise ValueError("OpenAI API key not found. Make sure to set it in a .env file.")
+
+# Initialize OpenAI client
+client = OpenAI(api_key=api_key)
 
 # Download stop words
 nltk.download('stopwords')
@@ -69,7 +72,7 @@ def extract_job_details(url):
     - 1-2 sentence Perks Summary
     """
     
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "system", "content": "Extract structured job details."},
                   {"role": "user", "content": prompt}]
