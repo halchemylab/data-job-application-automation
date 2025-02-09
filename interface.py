@@ -1,9 +1,9 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import messagebox
 from datetime import datetime
 import os
 from job_scraper import extract_job_details  # Import your scraping function
-from generate_resume_cover import process_word_document  # Import your generation function
+from generate_resume_cover import generate_resume_and_cover  # Updated import for refactored function
 
 class JobApplicationApp:
     def __init__(self, root):
@@ -65,32 +65,14 @@ class JobApplicationApp:
             messagebox.showwarning("Input Error", "Job Position and Company Name are required.")
             return
 
-        # Prepare output folder
-        current_date = datetime.now().strftime("%m%d%y")
-        output_subfolder = os.path.join("output", f"{company_name}_{current_date}")
-        os.makedirs(output_subfolder, exist_ok=True)
-
-        # Paths to templates
-        resume_template = "static/resume_template.docx"
-        cover_letter_template = "static/cover_letter_template.docx"
-
-        # Output file paths
-        resume_output = os.path.join(output_subfolder, "henry_pai_resume.docx")
-        cover_letter_output = os.path.join(output_subfolder, "henry_pai_cover_letter.docx")
-
-        # Replacements dictionary
-        replacements = {
-            "{{JOB_POSITION}}": job_position,
-            "{{COMPANY_NAME}}": company_name,
-            "{{SPECIFIC_JOB_PROJECT}}": specific_job_project,
-            "{{IT_SKILLS}}": required_it_skills,
-            "{{CURRENT_DATE}}": datetime.now().strftime("%B %d, %Y")
-        }
-
         try:
-            process_word_document(resume_template, resume_output, replacements)
-            process_word_document(cover_letter_template, cover_letter_output, replacements)
-            messagebox.showinfo("Success", f"Documents generated and saved in {output_subfolder}")
+            output_folder = generate_resume_and_cover(
+                job_position=job_position,
+                company_name=company_name,
+                specific_job_project=specific_job_project,
+                required_it_skills=required_it_skills
+            )
+            messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while generating documents: {e}")
 
