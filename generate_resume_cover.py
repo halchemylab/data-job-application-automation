@@ -26,38 +26,30 @@ def process_word_document(template_path, output_path, replacements):
                     replace_placeholders(para, replacements)
     doc.save(output_path)
 
-def main():
-    # Inputs
-    job_position = "Data Scientist"
-    company_name = "Flip"
-    specific_job_project = "Leveraging data to drive innovation in the e-commerce industry"
-    required_it_skills = "SQL, Python, R, ML, statistics, etc."
-    
-    # Paths
-    static_folder = "static"
-    output_folder = "output"
-    resume_template = os.path.join(static_folder, "resume_template.docx")
-    cover_letter_template = os.path.join(static_folder, "cover_letter_template.docx")
+def generate_resume_and_cover(job_position, company_name, specific_job_project, required_it_skills):
+    """Generates a customized resume and cover letter based on provided job details."""
     
     # Date formatting
     current_date = datetime.datetime.now().strftime("%B %d, %Y")
     folder_date = datetime.datetime.now().strftime("%m%d%y")
-    output_subfolder = os.path.join(output_folder, f"{company_name}_{folder_date}")
-    os.makedirs(output_subfolder, exist_ok=True)
     
-    # Output file paths
-    resume_output = os.path.join(output_subfolder, "henry_pai_resume.docx")
-    cover_letter_output = os.path.join(output_subfolder, "henry_pai_cover_letter.docx")
+    # Output folder setup
+    output_folder = os.path.join("output", f"{company_name}_{folder_date}")
+    os.makedirs(output_folder, exist_ok=True)
+    
+    # File paths
+    resume_template = os.path.join("static", "resume_template.docx")
+    cover_letter_template = os.path.join("static", "cover_letter_template.docx")
+    resume_output = os.path.join(output_folder, "henry_pai_resume.docx")
+    cover_letter_output = os.path.join(output_folder, "henry_pai_cover_letter.docx")
     
     # Replacements dictionary
     replacements = {
         "{{JOB_POSITION}}": job_position,
         "{{COMPANY_NAME}}": company_name,
-        "{{JOB_POSITION_p}}": job_position,
-        "{{COMPANY_NAME_p}}": company_name,
         "{{SPECIFIC_JOB_PROJECT}}": specific_job_project,
         "{{IT_SKILLS}}": required_it_skills,
-        "{{CURRENT_DATE}}": current_date,
+        "{{CURRENT_DATE}}": current_date
     }
     
     # Process documents
@@ -66,6 +58,14 @@ def main():
     
     print(f"Customized resume saved at: {resume_output}")
     print(f"Customized cover letter saved at: {cover_letter_output}")
+    
+    return output_folder  # Return path for Tkinter confirmation
 
+# Only runs if this file is executed directly (not when imported)
 if __name__ == "__main__":
-    main()
+    generate_resume_and_cover(
+        job_position="Data Scientist",
+        company_name="Flip",
+        specific_job_project="Leveraging data to drive innovation in the e-commerce industry",
+        required_it_skills="SQL, Python, R, ML, statistics, etc."
+    )
