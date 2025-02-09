@@ -49,7 +49,9 @@ def generate_resume_and_cover(job_position, company_name, specific_job_project, 
         "{{COMPANY_NAME}}": company_name,
         "{{SPECIFIC_JOB_PROJECT}}": specific_job_project,
         "{{IT_SKILLS}}": required_it_skills,
-        "{{CURRENT_DATE}}": current_date
+        "{{CURRENT_DATE}}": current_date,
+        "{{JOB_POSITION_p}}": job_position, # Placeholder for paragraph formatting 
+        "{{COMPANY_NAME_p}}": company_name  
     }
     
     # Process documents
