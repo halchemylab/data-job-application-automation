@@ -9,17 +9,17 @@ class JobApplicationApp:
         self.root = root
         self.root.title("Job Application Automation Tool")
         self.root.geometry("700x800")
-        self.root.configure(padx=20, pady=20)
+        self.root.configure(padx=20, pady=20, bg="white")  # Set background to white for light theme
 
         # Section 1: Web Scraping
         self.create_section_divider("Web Scraping")
         self.create_description("Insert Job URL below. The GPT-4o-mini engine will extract and recommend keywords for the fields.")
 
-        tk.Label(root, text="Job URL:", font=("Arial", 12)).pack(pady=5)
-        self.url_entry = tk.Entry(root, width=80, font=("Arial", 12))
+        tk.Label(root, text="Job URL:", font=("Arial", 12), bg="white", fg="black").pack(pady=5)
+        self.url_entry = tk.Entry(root, width=80, font=("Arial", 12), bg="white", fg="black", insertbackground="black")
         self.url_entry.pack(pady=5)
 
-        self.scrape_button = tk.Button(root, text="SCRAPE JOB DETAILS", font=("Arial", 12, "bold"), height=2, width=30, command=self.scrape_job_details)
+        self.scrape_button = tk.Button(root, text="SCRAPE JOB DETAILS", font=("Arial", 12, "bold"), height=2, width=30, command=self.scrape_job_details, bg="#f0f0f0", fg="black")
         self.scrape_button.pack(pady=15)
 
         # Section 2: Resume and Cover Letter Generation
@@ -34,18 +34,18 @@ class JobApplicationApp:
         }
 
         for field_name, var in self.fields.items():
-            tk.Label(root, text=f"{field_name}:", font=("Arial", 12)).pack(pady=5)
-            tk.Entry(root, textvariable=var, width=80, font=("Arial", 12)).pack(pady=5)
+            tk.Label(root, text=f"{field_name}:", font=("Arial", 12), bg="white", fg="black").pack(pady=5)
+            tk.Entry(root, textvariable=var, width=80, font=("Arial", 12), bg="white", fg="black", insertbackground="black").pack(pady=5)
 
-        self.generate_button = tk.Button(root, text="GENERATE RESUME & COVER LETTER", font=("Arial", 12, "bold"), height=2, width=40, command=self.generate_documents)
+        self.generate_button = tk.Button(root, text="GENERATE RESUME & COVER LETTER", font=("Arial", 12, "bold"), height=2, width=40, command=self.generate_documents, bg="#f0f0f0", fg="black")
         self.generate_button.pack(pady=20)
 
     def create_section_divider(self, text):
-        divider = tk.Label(self.root, text=text, font=("Arial", 16, "bold"), bg="gray90", width=60)
+        divider = tk.Label(self.root, text=text, font=("Arial", 16, "bold"), bg="#e0e0e0", fg="black", width=60)
         divider.pack(pady=15, fill='x')
 
     def create_description(self, text):
-        description = tk.Label(self.root, text=text, font=("Arial", 11), fg="gray40", wraplength=650, justify="left")
+        description = tk.Label(self.root, text=text, font=("Arial", 11), fg="gray40", bg="white", wraplength=650, justify="left")
         description.pack(pady=5)
 
     def scrape_job_details(self):
