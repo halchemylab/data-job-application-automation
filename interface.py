@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
 from datetime import datetime
+import random
 from job_scraper import extract_job_details  # Import your scraping function
 from generate_resume_cover import generate_resume_and_cover  # Updated import for refactored function
 
@@ -11,6 +12,10 @@ class JobApplicationApp:
         self.root.geometry("700x750")
         self.root.resizable(False, False)  # Make the window non-resizable
         self.root.configure(padx=20, pady=20, bg="white")  # Set background to white for light theme
+
+        # Canvas for Confetti Animation
+        self.canvas = tk.Canvas(root, width=700, height=800, bg="white", highlightthickness=0)
+        self.canvas.place(x=0, y=0)
 
         # Section 1: Web Scraping
         self.create_section_divider("Web Scraping")
@@ -97,8 +102,29 @@ class JobApplicationApp:
                 required_it_skills=required_it_skills
             )
             messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
+            self.run_confetti_animation()
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while generating documents: {e}")
+
+    def run_confetti_animation(self):
+        colors = ["#ff6666", "#66ff66", "#6666ff", "#ffff66", "#ff66ff", "#66ffff"]
+        confetti = []
+
+        for _ in range(100):
+            x = random.randint(0, 700)
+            y = random.randint(-800, 0)
+            size = random.randint(5, 15)
+            color = random.choice(colors)
+            confetti.append(self.canvas.create_oval(x, y, x+size, y+size, fill=color, outline=""))
+
+        def animate():
+            for piece in confetti:
+                self.canvas.move(piece, 0, 5)
+                if self.canvas.coords(piece)[1] > 800:
+                    self.canvas.coords(piece, random.randint(0, 700), random.randint(-800, 0), random.randint(0, 700) + size, random.randint(-800, 0) + size)
+            self.root.after(50, animate)
+
+        animate()
 
 if __name__ == "__main__":
     root = tk.Tk()
