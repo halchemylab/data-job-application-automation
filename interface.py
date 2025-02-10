@@ -1,7 +1,6 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import messagebox, ttk
 from datetime import datetime
-import os
 from job_scraper import extract_job_details  # Import your scraping function
 from generate_resume_cover import generate_resume_and_cover  # Updated import for refactored function
 
@@ -9,18 +8,24 @@ class JobApplicationApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Job Application Automation Tool")
-        self.root.geometry("600x700")
+        self.root.geometry("700x800")
+        self.root.configure(padx=20, pady=20)
 
-        # URL Entry
-        tk.Label(root, text="Job URL:").pack(pady=5)
-        self.url_entry = tk.Entry(root, width=70)
+        # Section 1: Web Scraping
+        self.create_section_divider("Web Scraping")
+        self.create_description("Insert Job URL below. The GPT-4o-mini engine will extract and recommend keywords for the fields.")
+
+        tk.Label(root, text="Job URL:", font=("Arial", 12)).pack(pady=5)
+        self.url_entry = tk.Entry(root, width=80, font=("Arial", 12))
         self.url_entry.pack(pady=5)
 
-        # Scrape Button
-        self.scrape_button = tk.Button(root, text="Scrape Job Details", command=self.scrape_job_details)
-        self.scrape_button.pack(pady=10)
+        self.scrape_button = tk.Button(root, text="SCRAPE JOB DETAILS", font=("Arial", 12, "bold"), height=2, width=30, command=self.scrape_job_details)
+        self.scrape_button.pack(pady=15)
 
-        # Job Details Fields
+        # Section 2: Resume and Cover Letter Generation
+        self.create_section_divider("Resume and Cover Letter")
+        self.create_description("Review or edit the extracted details below. Once ready, generate your customized resume and cover letter.")
+
         self.fields = {
             "Job Position": tk.StringVar(),
             "Company Name": tk.StringVar(),
@@ -29,12 +34,19 @@ class JobApplicationApp:
         }
 
         for field_name, var in self.fields.items():
-            tk.Label(root, text=f"{field_name}:").pack(pady=5)
-            tk.Entry(root, textvariable=var, width=70).pack(pady=5)
+            tk.Label(root, text=f"{field_name}:", font=("Arial", 12)).pack(pady=5)
+            tk.Entry(root, textvariable=var, width=80, font=("Arial", 12)).pack(pady=5)
 
-        # Generate Button
-        self.generate_button = tk.Button(root, text="Generate Resume & Cover Letter", command=self.generate_documents)
+        self.generate_button = tk.Button(root, text="GENERATE RESUME & COVER LETTER", font=("Arial", 12, "bold"), height=2, width=40, command=self.generate_documents)
         self.generate_button.pack(pady=20)
+
+    def create_section_divider(self, text):
+        divider = tk.Label(self.root, text=text, font=("Arial", 16, "bold"), bg="gray90", width=60)
+        divider.pack(pady=15, fill='x')
+
+    def create_description(self, text):
+        description = tk.Label(self.root, text=text, font=("Arial", 11), fg="gray40", wraplength=650, justify="left")
+        description.pack(pady=5)
 
     def scrape_job_details(self):
         url = self.url_entry.get()
