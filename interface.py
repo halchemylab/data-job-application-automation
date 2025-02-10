@@ -8,18 +8,17 @@ class JobApplicationApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Job Application Automation Tool")
-        self.root.geometry("700x800")
+        self.root.geometry("700x750")
+        self.root.resizable(False, False)  # Make the window non-resizable
         self.root.configure(padx=20, pady=20, bg="white")  # Set background to white for light theme
 
         # Section 1: Web Scraping
         self.create_section_divider("Web Scraping")
-        self.create_description("Insert Job URL below. The GPT-4o-mini engine will extract and recommend keywords for the fields.")
+        self.create_description("Insert Job URL below. The GPT-4o-mini engine will extract and recommend keywords for the fields. This will also add the company record to 'data/tracker.csv'.")
 
-        tk.Label(root, text="Job URL:", font=("Arial", 12), bg="white", fg="black").pack(pady=5)
-        self.url_entry = tk.Entry(root, width=80, font=("Arial", 12), bg="white", fg="black", insertbackground="black")
-        self.url_entry.pack(pady=5)
+        self.create_labeled_entry("Job URL:", "url_entry")
 
-        self.scrape_button = tk.Button(root, text="SCRAPE JOB DETAILS", font=("Arial", 12, "bold"), height=2, width=30, command=self.scrape_job_details, bg="#f0f0f0", fg="black")
+        self.scrape_button = tk.Button(root, text="SCRAPE JOB DETAILS", font=("Arial", 12, "bold"), height=2, width=30, command=self.scrape_job_details, bg="#e8e8e8", fg="black", relief="groove")
         self.scrape_button.pack(pady=15)
 
         # Section 2: Resume and Cover Letter Generation
@@ -34,10 +33,9 @@ class JobApplicationApp:
         }
 
         for field_name, var in self.fields.items():
-            tk.Label(root, text=f"{field_name}:", font=("Arial", 12), bg="white", fg="black").pack(pady=5)
-            tk.Entry(root, textvariable=var, width=80, font=("Arial", 12), bg="white", fg="black", insertbackground="black").pack(pady=5)
+            self.create_labeled_entry(f"{field_name}:", var)
 
-        self.generate_button = tk.Button(root, text="GENERATE RESUME & COVER LETTER", font=("Arial", 12, "bold"), height=2, width=40, command=self.generate_documents, bg="#f0f0f0", fg="black")
+        self.generate_button = tk.Button(root, text="GENERATE RESUME & COVER LETTER", font=("Arial", 12, "bold"), height=2, width=40, command=self.generate_documents, bg="#e8e8e8", fg="black", relief="groove")
         self.generate_button.pack(pady=20)
 
     def create_section_divider(self, text):
@@ -47,6 +45,20 @@ class JobApplicationApp:
     def create_description(self, text):
         description = tk.Label(self.root, text=text, font=("Arial", 11), fg="gray40", bg="white", wraplength=650, justify="left")
         description.pack(pady=5)
+
+    def create_labeled_entry(self, label_text, variable):
+        frame = tk.Frame(self.root, bg="white")
+        frame.pack(fill='x', pady=5)
+
+        label = tk.Label(frame, text=label_text, font=("Arial", 12), bg="white", fg="black", anchor="w")
+        label.pack(side="top", anchor="w")
+
+        if isinstance(variable, str):
+            entry = tk.Entry(frame, width=80, font=("Arial", 12), bg="#f9f9f9", fg="black", insertbackground="black")
+            setattr(self, variable, entry)
+        else:
+            entry = tk.Entry(frame, textvariable=variable, width=80, font=("Arial", 12), bg="#f9f9f9", fg="black", insertbackground="black")
+        entry.pack(side="top", anchor="w")
 
     def scrape_job_details(self):
         url = self.url_entry.get()
