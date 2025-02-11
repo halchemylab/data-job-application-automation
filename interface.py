@@ -4,6 +4,7 @@ from datetime import datetime
 import random
 from job_scraper import extract_job_details  # Import your scraping function
 from generate_resume_cover import generate_resume_and_cover  # Updated import for refactored function
+import time
 
 class JobApplicationApp:
     def __init__(self, root):
@@ -13,7 +14,7 @@ class JobApplicationApp:
         self.root.resizable(False, False)  # Make the window non-resizable
         self.root.configure(padx=20, pady=20, bg="white")  # Set background to white for light theme
 
-        # Canvas for Confetti Animation
+        # Canvas for Balloon Animation
         self.canvas = tk.Canvas(root, width=700, height=800, bg="white", highlightthickness=0)
         self.canvas.place(x=0, y=0)
 
@@ -102,28 +103,53 @@ class JobApplicationApp:
                 required_it_skills=required_it_skills
             )
             messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
-            self.run_confetti_animation()
+            self.run_balloon_animation()
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred while generating documents: {e}")
 
-    def run_confetti_animation(self):
+    def run_balloon_animation(self):
         colors = ["#ff6666", "#66ff66", "#6666ff", "#ffff66", "#ff66ff", "#66ffff"]
-        confetti = []
-
-        for _ in range(100):
-            x = random.randint(0, 700)
-            y = random.randint(-800, 0)
-            size = random.randint(5, 15)
+        balloons = []
+        
+        # Create balloon objects with timestamp
+        for _ in range(5):
+            x = random.randint(50, 650)
+            y = 800
+            size = random.randint(30, 50)
             color = random.choice(colors)
-            confetti.append(self.canvas.create_oval(x, y, x+size, y+size, fill=color, outline=""))
-
+            balloon = self.canvas.create_oval(x, y, x+size, y+size, fill=color, outline="black")
+            string = self.canvas.create_line(x+size/2, y+size, x+size/2, y+size+30, fill="black")
+            # Add creation time to each balloon
+            balloons.append({
+                'balloon': balloon,
+                'string': string,
+                'created_at': time.time()
+            })
+        
         def animate():
-            for piece in confetti:
-                self.canvas.move(piece, 0, 5)
-                if self.canvas.coords(piece)[1] > 800:
-                    self.canvas.coords(piece, random.randint(0, 700), random.randint(-800, 0), random.randint(0, 700) + size, random.randint(-800, 0) + size)
-            self.root.after(50, animate)
-
+            current_time = time.time()
+            # Create a new list for remaining balloons
+            remaining_balloons = []
+            
+            for balloon_info in balloons:
+                # Check if balloon should be removed (2 seconds passed)
+                if current_time - balloon_info['created_at'] < 2:
+                    # Move balloon up if less than 2 seconds old
+                    self.canvas.move(balloon_info['balloon'], 0, -5)
+                    self.canvas.move(balloon_info['string'], 0, -5)
+                    remaining_balloons.append(balloon_info)
+                else:
+                    # Delete balloon if 2 seconds passed
+                    self.canvas.delete(balloon_info['balloon'])
+                    self.canvas.delete(balloon_info['string'])
+            
+            # Update balloons list
+            balloons[:] = remaining_balloons
+            
+            # Continue animation if there are balloons left
+            if remaining_balloons:
+                self.root.after(50, animate)
+        
         animate()
 
 if __name__ == "__main__":
