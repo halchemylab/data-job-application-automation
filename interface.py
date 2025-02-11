@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox, ttk
 from datetime import datetime
 import random
-from job_scraper import extract_job_details  # Import your scraping function
+from job_scraper import extract_job_details, save_job_to_csv  # Add import for save_job_to_csv
 from generate_resume_cover import generate_resume_and_cover  # Updated import for refactored function
 import time
 
@@ -75,11 +75,16 @@ class JobApplicationApp:
         try:
             job_details = extract_job_details(url)
             if job_details:
+                # Update UI fields
                 self.fields["Job Position"].set(job_details.get("Job Position", ""))
                 self.fields["Company Name"].set(job_details.get("Company Name", ""))
                 self.fields["Specific Job Project"].set(job_details.get("Specific Job Project", ""))
                 self.fields["Required IT Skills"].set(job_details.get("Required IT Skills", ""))
-                messagebox.showinfo("Success", "Job details scraped successfully! Please review and edit if needed.")
+                
+                # Save to CSV
+                save_job_to_csv(job_details, url)
+                
+                messagebox.showinfo("Success", "Job details scraped successfully and saved to tracker.csv! Please review and edit if needed.")
             else:
                 messagebox.showerror("Error", "Failed to extract job details.")
         except Exception as e:
