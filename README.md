@@ -18,8 +18,8 @@ The **Job Application Automation Tool** is designed to streamline and simplify t
 - Maintains a **CSV-based tracker** to log job applications.
 - Records details such as job titles, company names, application status, and feedback.
 
-### 🎨 Streamlit Interface
-- Provides a user-friendly **Streamlit-based** web interface.
+### 🎨 TKInter Interface
+- Provides a simple, user-friendly python interface.
 - Enables easy input of job descriptions, selection of templates, and application management.
 
 ## 📂 Proposed File Structure
