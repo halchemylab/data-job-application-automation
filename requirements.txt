@@ -2,7 +2,6 @@ streamlit          # For the frontend
 pandas             # For managing the CSV tracker
 python-docx        # For handling Word document templates
 pathlib            # For file management
-os                 # For directory operations
 openai             # For context generation
-ntlk               # For natural language processing before context generation
+nltk               # For natural language processing before context generation
 selenium           # For bypassing web scraping
