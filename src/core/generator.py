@@ -2,6 +2,7 @@ import os
 import datetime
 from docx import Document
 from docx.shared import Pt
+from src.config import PROJECT_ROOT
 
 def replace_placeholders(paragraph, replacements):
     """Replaces placeholders in a given paragraph while preserving formatting."""
@@ -34,12 +35,12 @@ def generate_resume_and_cover(job_position, company_name, specific_job_project, 
     folder_date = datetime.datetime.now().strftime("%m%d%y")
     
     # Output folder setup
-    output_folder = os.path.join("output", f"{company_name}_{folder_date}")
+    output_folder = os.path.join(PROJECT_ROOT, "output", f"{company_name}_{folder_date}")
     os.makedirs(output_folder, exist_ok=True)
     
     # File paths
-    resume_template = os.path.join("static", "resume_template.docx")
-    cover_letter_template = os.path.join("static", "cover_letter_template.docx")
+    resume_template = os.path.join(PROJECT_ROOT, "static", "resume_template.docx")
+    cover_letter_template = os.path.join(PROJECT_ROOT, "static", "cover_letter_template.docx")
     resume_output = os.path.join(output_folder, "henry_pai_resume.docx")
     cover_letter_output = os.path.join(output_folder, "henry_pai_cover_letter.docx")
     
@@ -60,12 +61,3 @@ def generate_resume_and_cover(job_position, company_name, specific_job_project, 
     print(f"Customized cover letter saved at: {cover_letter_output}")
     
     return output_folder  # Return path for Tkinter confirmation
-
-# Only runs if this file is executed directly (not when imported)
-if __name__ == "__main__":
-    generate_resume_and_cover(
-        job_position="Data Scientist",
-        company_name="Flip",
-        specific_job_project="Leveraging data to drive innovation in the e-commerce industry",
-        required_it_skills="SQL, Python, R, ML, statistics, etc."
-    )

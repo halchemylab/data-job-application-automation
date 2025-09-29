@@ -11,6 +11,7 @@ import nltk
 from nltk.corpus import stopwords
 from dotenv import load_dotenv
 from datetime import datetime
+from src.config import PROJECT_ROOT
 
 # Load environment variables from .env file
 load_dotenv()
@@ -121,7 +122,9 @@ def extract_job_details(url):
 
     return job_details_dict
 
-def save_job_to_csv(job_details, url, csv_path='data/tracker.csv'):
+def save_job_to_csv(job_details, url, csv_path=None):
+    if csv_path is None:
+        csv_path = os.path.join(PROJECT_ROOT, 'data', 'tracker.csv')
     try:
         file_exists = os.path.isfile(csv_path)
         
@@ -154,16 +157,3 @@ def save_job_to_csv(job_details, url, csv_path='data/tracker.csv'):
             writer.writerow(row)
     except (IOError, OSError) as e:
         print(f"Error writing to CSV file: {e}")
-
-if __name__ == "__main__":
-    job_url = "https://www.ziprecruiter.com/c/2002-United-Services-Automobile-Asn/Job/Data-Scientist-Intermediate-level/-in-Charlotte,NC?jid=c327f1daa48d5aef"
-    job_details = extract_job_details(job_url)
-    
-    if job_details:
-        print("\nExtracted Job Details:")
-        for key, value in job_details.items():
-            print(f"{key}: {value}")
-        
-        save_job_to_csv(job_details, job_url)
-        print("\nJob details saved to data/tracker.csv")
-

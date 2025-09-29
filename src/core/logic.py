@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
-from job_scraper import extract_job_details, save_job_to_csv
-from generate_resume_cover import generate_resume_and_cover
+from src.core.scraper import extract_job_details, save_job_to_csv
+from src.core.generator import generate_resume_and_cover
 
 def scrape_job_details_logic(url):
     if not url:

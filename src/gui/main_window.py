@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
-from logic import scrape_job_details_logic, generate_documents_logic
+from src.core.logic import scrape_job_details_logic, generate_documents_logic
 import time
 
 class JobApplicationApp:
@@ -121,8 +121,3 @@ class JobApplicationApp:
                 self.root.after(50, animate)
         
         animate()
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = JobApplicationApp(root)
-    root.mainloop()
