@@ -1,6 +1,9 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
+import os
+import sys
+import subprocess
 from src.core.logic import scrape_job_details_logic, generate_documents_logic
 from src.logger import logger
 import time
@@ -87,6 +90,11 @@ class JobApplicationApp:
             if output_folder:
                 messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
                 self.run_balloon_animation()
+                if sys.platform == "win32":
+                    os.startfile(output_folder)
+                else:
+                    opener = "open" if sys.platform == "darwin" else "xdg-open"
+                    subprocess.Popen([opener, output_folder])
         except ValueError as e:
             logger.error(f"Input error during document generation: {e}")
             messagebox.showwarning("Input Error", str(e))
