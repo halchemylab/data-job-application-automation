@@ -1,7 +1,7 @@
-streamlit          # For the frontend
-pandas             # For managing the CSV tracker
-python-docx        # For handling Word document templates
-pathlib            # For file management
-openai             # For context generation
-nltk               # For natural language processing before context generation
-selenium           # For bypassing web scraping
+selenium
+webdriver-manager
+openai
+python-dotenv
+beautifulsoup4
+nltk
+python-docx

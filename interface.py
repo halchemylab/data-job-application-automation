@@ -1,9 +1,7 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
-from datetime import datetime
+from tkinter import messagebox
 import random
-from job_scraper import extract_job_details, save_job_to_csv  # Add import for save_job_to_csv
-from generate_resume_cover import generate_resume_and_cover  # Updated import for refactored function
+from logic import scrape_job_details_logic, generate_documents_logic
 import time
 
 class JobApplicationApp:
@@ -68,49 +66,16 @@ class JobApplicationApp:
 
     def scrape_job_details(self):
         url = self.url_entry.get()
-        if not url:
-            messagebox.showwarning("Input Error", "Please enter a job URL.")
-            return
-
-        try:
-            job_details = extract_job_details(url)
-            if job_details:
-                # Update UI fields
-                self.fields["Job Position"].set(job_details.get("Job Position", ""))
-                self.fields["Company Name"].set(job_details.get("Company Name", ""))
-                self.fields["Specific Job Project"].set(job_details.get("Specific Job Project", ""))
-                self.fields["Required IT Skills"].set(job_details.get("Required IT Skills", ""))
-                
-                # Save to CSV
-                save_job_to_csv(job_details, url)
-                
-                messagebox.showinfo("Success", "Job details scraped successfully and saved to tracker.csv! Please review and edit if needed.")
-            else:
-                messagebox.showerror("Error", "Failed to extract job details.")
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred while scraping: {e}")
+        job_details = scrape_job_details_logic(url)
+        if job_details:
+            self.fields["Job Position"].set(job_details.get("Job Position", ""))
+            self.fields["Company Name"].set(job_details.get("Company Name", ""))
+            self.fields["Specific Job Project"].set(job_details.get("Specific Job Project", ""))
+            self.fields["Required IT Skills"].set(job_details.get("Required IT Skills", ""))
 
     def generate_documents(self):
-        job_position = self.fields["Job Position"].get()
-        company_name = self.fields["Company Name"].get()
-        specific_job_project = self.fields["Specific Job Project"].get()
-        required_it_skills = self.fields["Required IT Skills"].get()
-
-        if not all([job_position, company_name]):
-            messagebox.showwarning("Input Error", "Job Position and Company Name are required.")
-            return
-
-        try:
-            output_folder = generate_resume_and_cover(
-                job_position=job_position,
-                company_name=company_name,
-                specific_job_project=specific_job_project,
-                required_it_skills=required_it_skills
-            )
-            messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
+        if generate_documents_logic(self.fields):
             self.run_balloon_animation()
-        except Exception as e:
-            messagebox.showerror("Error", f"An error occurred while generating documents: {e}")
 
     def run_balloon_animation(self):
         colors = ["#ff6666", "#66ff66", "#6666ff", "#ffff66", "#ff66ff", "#66ffff"]

@@ -26,15 +26,21 @@ client = OpenAI(api_key=api_key)
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
 
+from selenium.common.exceptions import WebDriverException
+from openai import APIError
+
 def extract_job_details(url):
     """Scrapes job details from a given URL using Selenium and extracts structured information using OpenAI API."""
-    options = Options()
-    options.headless = True  # Runs browser in headless mode (no UI)
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
-    
-    driver.get(url)
-    page_text = driver.page_source  # Get full rendered page source
-    driver.quit()
+    try:
+        options = Options()
+        options.headless = True  # Runs browser in headless mode (no UI)
+        driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        driver.get(url)
+        page_text = driver.page_source  # Get full rendered page source
+        driver.quit()
+    except WebDriverException as e:
+        print(f"Error with Selenium WebDriver: {e}")
+        return None
     
     # Parse the page with BeautifulSoup to extract readable text
     soup = BeautifulSoup(page_text, "html.parser")
@@ -88,11 +94,15 @@ def extract_job_details(url):
     - 1-2 sentence Perks Summary
     """
     
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "system", "content": "Extract structured job details."},
-                  {"role": "user", "content": prompt}]
-    )
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "system", "content": "Extract structured job details."},
+                      {"role": "user", "content": prompt}]
+        )
+    except APIError as e:
+        print(f"Error with OpenAI API: {e}")
+        return None
 
     extracted_data = response.choices[0].message.content.strip()
     
@@ -112,35 +122,38 @@ def extract_job_details(url):
     return job_details_dict
 
 def save_job_to_csv(job_details, url, csv_path='data/tracker.csv'):
-    file_exists = os.path.isfile(csv_path)
-    
-    headers = [
-        "Status", "Date Applied", "URL", "Company Name", "Job Position", 
-        "Specific Job Project", "Required IT Skills", "Job Type", 
-        "Remote Work", "Job Description Summary", "Perks Summary", 
-        "Notes/Feedback"
-    ]
-    
-    row = [
-        "",  # Status
-        datetime.now().strftime("%Y-%m-%d"),  # Date Applied
-        url,
-        job_details.get("Company Name", "Unknown"),
-        job_details.get("Job Position", "Unknown"),
-        job_details.get("Specific Job Project", "Unknown"),
-        job_details.get("Required IT Skills", "Unknown"),
-        job_details.get("Job Type", "Unknown"),
-        job_details.get("Remote Work", "Unknown"),
-        job_details.get("Job Description Summary", "Unknown"),
-        job_details.get("Perks Summary", "Unknown"),
-        ""  # Notes/Feedback
-    ]
-    
-    with open(csv_path, mode='a', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        if not file_exists:
-            writer.writerow(headers)
-        writer.writerow(row)
+    try:
+        file_exists = os.path.isfile(csv_path)
+        
+        headers = [
+            "Status", "Date Applied", "URL", "Company Name", "Job Position", 
+            "Specific Job Project", "Required IT Skills", "Job Type", 
+            "Remote Work", "Job Description Summary", "Perks Summary", 
+            "Notes/Feedback"
+        ]
+        
+        row = [
+            "",  # Status
+            datetime.now().strftime("%Y-%m-%d"),  # Date Applied
+            url,
+            job_details.get("Company Name", "Unknown"),
+            job_details.get("Job Position", "Unknown"),
+            job_details.get("Specific Job Project", "Unknown"),
+            job_details.get("Required IT Skills", "Unknown"),
+            job_details.get("Job Type", "Unknown"),
+            job_details.get("Remote Work", "Unknown"),
+            job_details.get("Job Description Summary", "Unknown"),
+            job_details.get("Perks Summary", "Unknown"),
+            ""  # Notes/Feedback
+        ]
+        
+        with open(csv_path, mode='a', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file)
+            if not file_exists:
+                writer.writerow(headers)
+            writer.writerow(row)
+    except (IOError, OSError) as e:
+        print(f"Error writing to CSV file: {e}")
 
 if __name__ == "__main__":
     job_url = "https://www.ziprecruiter.com/c/2002-United-Services-Automobile-Asn/Job/Data-Scientist-Intermediate-level/-in-Charlotte,NC?jid=c327f1daa48d5aef"
