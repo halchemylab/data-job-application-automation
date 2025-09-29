@@ -12,6 +12,7 @@ from nltk.corpus import stopwords
 from dotenv import load_dotenv
 from datetime import datetime
 from src.config import PROJECT_ROOT
+from src.logger import logger
 
 # Load environment variables from .env file
 load_dotenv()
@@ -40,7 +41,7 @@ def extract_job_details(url):
         page_text = driver.page_source  # Get full rendered page source
         driver.quit()
     except WebDriverException as e:
-        print(f"Error with Selenium WebDriver: {e}")
+        logger.error(f"Error with Selenium WebDriver: {e}")
         return None
     
     # Parse the page with BeautifulSoup to extract readable text
@@ -102,7 +103,7 @@ def extract_job_details(url):
                       {"role": "user", "content": prompt}]
         )
     except APIError as e:
-        print(f"Error with OpenAI API: {e}")
+        logger.error(f"Error with OpenAI API: {e}")
         return None
 
     extracted_data = response.choices[0].message.content.strip()
@@ -118,7 +119,7 @@ def extract_job_details(url):
             value = match.group(2).strip()
             job_details_dict[key] = value
         else:
-            print(f"Failed to match line: {line}")
+            logger.warning(f"Failed to match line: {line}")
 
     return job_details_dict
 
@@ -156,4 +157,4 @@ def save_job_to_csv(job_details, url, csv_path=None):
                 writer.writerow(headers)
             writer.writerow(row)
     except (IOError, OSError) as e:
-        print(f"Error writing to CSV file: {e}")
+        logger.error(f"Error writing to CSV file: {e}")

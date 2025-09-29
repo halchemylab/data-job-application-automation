@@ -3,6 +3,7 @@ import datetime
 from docx import Document
 from docx.shared import Pt
 from src.config import PROJECT_ROOT
+from src.logger import logger
 
 def replace_placeholders(paragraph, replacements):
     """Replaces placeholders in a given paragraph while preserving formatting."""
@@ -57,7 +58,7 @@ def generate_resume_and_cover(job_position, company_name, specific_job_project, 
     process_word_document(resume_template, resume_output, replacements)
     process_word_document(cover_letter_template, cover_letter_output, replacements)
     
-    print(f"Customized resume saved at: {resume_output}")
-    print(f"Customized cover letter saved at: {cover_letter_output}")
+    logger.info(f"Customized resume saved at: {resume_output}")
+    logger.info(f"Customized cover letter saved at: {cover_letter_output}")
     
     return output_folder  # Return path for Tkinter confirmation

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 from src.core.logic import scrape_job_details_logic, generate_documents_logic
+from src.logger import logger
 import time
 
 class JobApplicationApp:
@@ -77,6 +78,7 @@ class JobApplicationApp:
             else:
                 messagebox.showerror("Error", "Failed to extract job details.")
         except ValueError as e:
+            logger.error(f"Input error during scraping: {e}")
             messagebox.showwarning("Input Error", str(e))
 
     def generate_documents(self):
@@ -86,10 +88,13 @@ class JobApplicationApp:
                 messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
                 self.run_balloon_animation()
         except ValueError as e:
+            logger.error(f"Input error during document generation: {e}")
             messagebox.showwarning("Input Error", str(e))
         except FileNotFoundError as e:
+            logger.error(f"File not found during document generation: {e}")
             messagebox.showerror("Error", f"Error generating documents: {e}. Make sure the template files exist.")
         except Exception as e:
+            logger.error(f"An unexpected error occurred during document generation: {e}")
             messagebox.showerror("Error", f"An error occurred while generating documents: {e}")
 
     def run_balloon_animation(self):
