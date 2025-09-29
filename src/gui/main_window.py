@@ -65,17 +65,32 @@ class JobApplicationApp:
         entry.pack(side="top", anchor="w")
 
     def scrape_job_details(self):
-        url = self.url_entry.get()
-        job_details = scrape_job_details_logic(url)
-        if job_details:
-            self.fields["Job Position"].set(job_details.get("Job Position", ""))
-            self.fields["Company Name"].set(job_details.get("Company Name", ""))
-            self.fields["Specific Job Project"].set(job_details.get("Specific Job Project", ""))
-            self.fields["Required IT Skills"].set(job_details.get("Required IT Skills", ""))
+        try:
+            url = self.url_entry.get()
+            job_details = scrape_job_details_logic(url)
+            if job_details:
+                self.fields["Job Position"].set(job_details.get("Job Position", ""))
+                self.fields["Company Name"].set(job_details.get("Company Name", ""))
+                self.fields["Specific Job Project"].set(job_details.get("Specific Job Project", ""))
+                self.fields["Required IT Skills"].set(job_details.get("Required IT Skills", ""))
+                messagebox.showinfo("Success", "Job details scraped successfully and saved to tracker.csv! Please review and edit if needed.")
+            else:
+                messagebox.showerror("Error", "Failed to extract job details.")
+        except ValueError as e:
+            messagebox.showwarning("Input Error", str(e))
 
     def generate_documents(self):
-        if generate_documents_logic(self.fields):
-            self.run_balloon_animation()
+        try:
+            output_folder = generate_documents_logic(self.fields)
+            if output_folder:
+                messagebox.showinfo("Success", f"Documents generated and saved in {output_folder}")
+                self.run_balloon_animation()
+        except ValueError as e:
+            messagebox.showwarning("Input Error", str(e))
+        except FileNotFoundError as e:
+            messagebox.showerror("Error", f"Error generating documents: {e}. Make sure the template files exist.")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred while generating documents: {e}")
 
     def run_balloon_animation(self):
         colors = ["#ff6666", "#66ff66", "#6666ff", "#ffff66", "#ff66ff", "#66ffff"]
