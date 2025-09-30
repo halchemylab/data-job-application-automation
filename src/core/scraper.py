@@ -6,6 +6,7 @@ from openai import OpenAI
 import os
 import re
 import csv
+import json
 from bs4 import BeautifulSoup
 import nltk
 from nltk.corpus import stopwords
@@ -61,65 +62,45 @@ def extract_job_details(url):
     
     # Send filtered text to OpenAI for structured extraction
     prompt = f"""
-    Extract structured information from the following job posting:
-    
+    Extract structured information from the following job posting and return it as a JSON object.
+
     {minimized_text}
 
-    ### **Response Formatting Guidelines**
+    ### **JSON Schema**
+    {{
+      "Job Position": "string",
+      "Company Name": "string",
+      "Specific Job Project": "string",
+      "Required IT Skills": "string (comma-separated)",
+      "Job Type": "string (e.g., Full-Time, Part-Time, Contract)",
+      "Remote Work": "string (Yes/No)",
+      "Job Description Summary": "string (1-2 sentences)",
+      "Perks Summary": "string (1-2 sentences)"
+    }}
 
-    - **Use the exact format below.**
-    - **Do not add any extra text or explanations.**
-    - **Ensure each field is formatted as: `- **Field Name**: Value`**
-    - **Field names must be exactly as given below.**
-    - **If information is missing, write "Unknown". Do NOT modify field names.**
-
-    ### **Response Format (Example)**
-    - **Job Position**: Software Engineer
-    - **Company Name**: Google
-    - **Specific Job Project**: Developing cloud-based AI solutions
-    - **Required IT Skills**: Python, TensorFlow, Cloud Computing
-    - **Job Type**: Full-Time
-    - **Remote Work**: Yes
-    - **Job Description Summary**: You will design and develop scalable machine learning applications.
-    - **Perks Summary**: Competitive salary, stock options, remote work options, and health benefits.
-
-    Now, extract details from the job posting and follow the exact format above.
-
-    Provide the following details:
-    - Job Position
-    - Company Name
-    - Specific Job Project (What the role is focused on)
-    - Required IT Skills (comma-separated)
-    - Job Type (Full Time, Part Time, Contract, etc.)
-    - Remote Work (Yes/No)
-    - 1-2 sentence Job Description Summary
-    - 1-2 sentence Perks Summary
+    If a value is not found, use "Unknown".
     """
     
     try:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=[{"role": "system", "content": "Extract structured job details."},
-                      {"role": "user", "content": prompt}]
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": "You are an expert in extracting job details and returning them as a valid JSON object."},
+                {"role": "user", "content": prompt}
+            ]
         )
     except APIError as e:
         logger.error(f"Error with OpenAI API: {e}")
         return None
 
-    extracted_data = response.choices[0].message.content.strip()
-    
-    # Convert structured text into a dictionary
-    job_details_dict = {}
-    for line in extracted_data.split("\n"):
-        line = line.strip()
-        match = re.match(r"^\s*-?\s*\*\*(.+?)\*\*:\s*(.+)$", line)
-        
-        if match:
-            key = match.group(1).strip()
-            value = match.group(2).strip()
-            job_details_dict[key] = value
-        else:
-            logger.warning(f"Failed to match line: {line}")
+    try:
+        extracted_data = response.choices[0].message.content
+        job_details_dict = json.loads(extracted_data)
+    except (json.JSONDecodeError, IndexError) as e:
+        logger.error(f"Failed to parse JSON response from OpenAI: {e}")
+        logger.debug(f"Invalid JSON response: {extracted_data}")
+        return None
 
     return job_details_dict
 
