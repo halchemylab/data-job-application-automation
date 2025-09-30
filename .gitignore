@@ -2,4 +2,5 @@
 output/
 venv/
 __pycache__
-data/tracker.csv
+data/
+app.log
