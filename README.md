@@ -1,70 +1,69 @@
-# Job-Application-Automation-Tool
+# Data Job Application Automation
 
 ## 🚀 Project Summary
 
-The **Job Application Automation Tool** is designed to streamline and simplify the job application process. By automating key steps such as customizing resumes and cover letters, organizing files, and tracking applications, this tool enhances efficiency for job seekers.
+The **Data Job Application Automation Tool** is a desktop application designed to streamline the job application process. It uses AI to extract key details from a job posting URL, and then uses that information to generate a customized resume and cover letter from your templates.
 
 ## ✨ Features
 
-### 📄 Resume and Cover Letter Customization
-- Uses **Natural Language Processing (NLP)** to extract key skills and requirements from job descriptions.
-- Customizes predefined resume and cover letter templates to match job postings.
-
-### 📁 File Management
-- Automatically creates organized folders for each job application.
-- Stores customized resumes and cover letters efficiently.
-
-### 📊 Application Tracker
-- Maintains a **CSV-based tracker** to log job applications.
-- Records details such as job titles, company names, application status, and feedback.
-
-### 🎨 TKInter Interface
-- Provides a simple, user-friendly python interface.
-- Enables easy input of job descriptions, selection of templates, and application management.
-
-## 📂 Proposed File Structure
-
-```
-job_application_tool/
-├── app/                      # Main application code
-│   ├── main.py               # Streamlit app entry point
-│   ├── resume_templates/     # Directory for resume templates
-│   │   ├── template1.docx
-│   │   └── template2.docx
-│   ├── cover_letter_templates/  # Directory for cover letter templates
-│   │   ├── template1.docx
-│   │   └── template2.docx
-│   ├── utils/                # Helper functions
-│   │   ├── file_manager.py   # File and folder management
-│   │   ├── nlp_processor.py  # NLP processing for job descriptions
-│   │   ├── tracker.py        # Functions to update CSV tracker
-│   │   ├── notification.py   # Twilio SMS notifications
-│   │   └── scheduler.py      # Follow-up scheduling
-│   ├── data/                 # Data storage
-│   │   ├── application_tracker.csv  # CSV file to track applications
-│   └── static/               # Static assets (if any)
-├── requirements.txt          # Python dependencies
-└── README.md                 # Project documentation
-```
+-   **Web Scraping:** Extracts job details (position, company, skills, etc.) from a provided URL using **Selenium**.
+-   **AI-Powered Data Extraction:** Uses **OpenAI (gpt-4o-mini)** to parse the scraped text and extract structured information.
+-   **Document Generation:** Populates your `.docx` resume and cover letter templates with the extracted job details.
+-   **File Organization:** Automatically creates a new folder for each application, containing the customized documents.
+-   **Application Tracking:** Appends a record of each scraped job to a central `tracker.csv` file.
+-   **Simple UI:** Provides a user-friendly interface built with **Tkinter**.
 
 ## 🛠️ Technologies Used
-- **Python** (Core functionality)
-- **Streamlit** (User Interface)
-- **OpenAI API** (Natural Language Processing)
-- **Pandas** (Data tracking and management)
-- **Docx** (Template handling)
-- **CSV** (Application tracking)
 
-## 🎯 Future Enhancements
-- ✅ AI-powered resume and cover letter creation.
-- ✅ Automated job search tracking.
-- ✅ Integration with job boards (LinkedIn, Indeed).
-- ✅ Email automation for follow-ups.
+-   **Python**
+-   **Tkinter** for the GUI
+-   **Selenium** for web scraping
+-   **OpenAI API** for data extraction
+-   **python-docx** for Word document manipulation
+
+## ⚙️ Setup and Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository-url>
+    cd data-job-application-automation
+    ```
+
+2.  **Create and activate a virtual environment:**
+    ```bash
+    # For Windows
+    python -m venv venv
+    .\venv\Scripts\activate
+
+    # For macOS/Linux
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+
+3.  **Install the dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Set up your environment variables:**
+    -   Create a copy of the `.env.example` file and name it `.env`.
+    -   Open the `.env` file and add your OpenAI API key:
+        ```
+        OPENAI_API_KEY="your_openai_api_key_here"
+        ```
+
+## ▶️ How to Run
+
+Once you have completed the setup, run the following command in your terminal to start the application:
+
+```bash
+python app.py
+```
 
 ## 💡 Contribution
+
 Contributions are welcome! Feel free to open issues or submit pull requests.
 
 ## 📜 License
-This project is licensed under the MIT License.
 
-## 🚀 Happy Job Hunting!
+This project is licensed under the MIT License.
