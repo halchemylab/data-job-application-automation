@@ -6,12 +6,14 @@ The **Data Job Application Automation Tool** is a desktop application designed t
 
 ## ✨ Features
 
--   **Web Scraping:** Extracts job details (position, company, skills, etc.) from a provided URL using **Selenium**.
--   **AI-Powered Data Extraction:** Uses **OpenAI (gpt-4o-mini)** to parse the scraped text and extract structured information.
+-   **Web Scraping:** Extracts job details from a provided URL using Selenium.
+-   **AI-Powered Data Extraction:** Uses OpenAI (gpt-4o-mini) to parse the scraped text and extract structured information.
 -   **Document Generation:** Populates your `.docx` resume and cover letter templates with the extracted job details.
 -   **File Organization:** Automatically creates a new folder for each application, containing the customized documents.
 -   **Application Tracking:** Appends a record of each scraped job to a central `tracker.csv` file.
--   **Simple UI:** Provides a user-friendly interface built with **Tkinter**.
+-   **Simple UI:** Provides a user-friendly interface built with Tkinter.
+-   **Modular Architecture:** The code is organized into distinct modules for scraping, AI interaction, file handling, and UI components, making it easy to maintain and extend.
+-   **Robust Error Handling:** Implements comprehensive error handling to provide a stable and reliable user experience.
 
 ## 🛠️ Technologies Used
 
@@ -20,6 +22,19 @@ The **Data Job Application Automation Tool** is a desktop application designed t
 -   **Selenium** for web scraping
 -   **OpenAI API** for data extraction
 -   **python-docx** for Word document manipulation
+-   **NLTK** for text processing
+
+## Project Structure
+
+The project is organized into the following main directories:
+
+-   `src/core`: Contains the core application logic, including modules for web scraping (`scraper.py`), AI-powered data extraction (`ai_extractor.py`), file handling (`file_handler.py`), and document generation (`generator.py`).
+-   `src/gui`: Contains the user interface code, including the main application window (`main_window.py`), UI components (`ui_components.py`), and animations (`animations.py`).
+-   `src/config.py`: Contains the application configuration, including UI settings and file paths.
+-   `src/logger.py`: Contains the logging configuration.
+-   `data`: Contains the `tracker.csv` file for tracking job applications.
+-   `static`: Contains the resume and cover letter templates.
+-   `output`: Contains the generated resumes and cover letters.
 
 ## ⚙️ Setup and Installation
 
