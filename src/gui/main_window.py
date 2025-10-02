@@ -50,6 +50,10 @@ class JobApplicationApp:
     def scrape_job_details(self):
         try:
             url = self.url_entry.get()
+            if not url:
+                messagebox.showwarning("Input Error", "Please enter a job URL.")
+                return
+
             job_details = scrape_job_details_logic(url)
             if job_details:
                 self.fields["Job Position"].set(job_details.get("Job Position", ""))
@@ -58,10 +62,10 @@ class JobApplicationApp:
                 self.fields["Required IT Skills"].set(job_details.get("Required IT Skills", ""))
                 messagebox.showinfo("Success", "Job details scraped successfully and saved to tracker.csv! Please review and edit if needed.")
             else:
-                messagebox.showerror("Error", "Failed to extract job details.")
-        except ValueError as e:
-            logger.error(f"Input error during scraping: {e}")
-            messagebox.showwarning("Input Error", str(e))
+                messagebox.showerror("Error", "Failed to extract job details. Please check the URL and your internet connection.")
+        except Exception as e:
+            logger.error(f"An unexpected error occurred during scraping: {e}")
+            messagebox.showerror("Error", f"An unexpected error occurred: {e}")
 
     def generate_documents(self):
         try:
@@ -74,9 +78,8 @@ class JobApplicationApp:
                 else:
                     opener = "open" if sys.platform == "darwin" else "xdg-open"
                     subprocess.Popen([opener, output_folder])
-        except ValueError as e:
-            logger.error(f"Input error during document generation: {e}")
-            messagebox.showwarning("Input Error", str(e))
+            else:
+                messagebox.showerror("Error", "Failed to generate documents. Please check the logs for more details.")
         except FileNotFoundError as e:
             logger.error(f"File not found during document generation: {e}")
             messagebox.showerror("Error", f"Error generating documents: {e}. Make sure the template files exist.")

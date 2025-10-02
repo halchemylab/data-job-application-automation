@@ -37,5 +37,11 @@ def save_job_to_csv(job_details, url, csv_path=None):
             if not file_exists:
                 writer.writerow(headers)
             writer.writerow(row)
-    except (IOError, OSError) as e:
-        logger.error(f"Error writing to CSV file: {e}")
+    except PermissionError as e:
+        logger.error(f"Permission error while writing to CSV file: {e}")
+    except IOError as e:
+        logger.error(f"I/O error while writing to CSV file: {e}")
+    except OSError as e:
+        logger.error(f"OS error while writing to CSV file: {e}")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred while writing to the CSV file: {e}")

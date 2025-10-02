@@ -18,15 +18,22 @@ def replace_placeholders(paragraph, replacements):
 
 def process_word_document(template_path, output_path, replacements):
     """Reads a Word document, replaces placeholders, and saves a new version while preserving formatting."""
-    doc = Document(template_path)
-    for para in doc.paragraphs:
-        replace_placeholders(para, replacements)
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for para in cell.paragraphs:
-                    replace_placeholders(para, replacements)
-    doc.save(output_path)
+    try:
+        doc = Document(template_path)
+        for para in doc.paragraphs:
+            replace_placeholders(para, replacements)
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for para in cell.paragraphs:
+                        replace_placeholders(para, replacements)
+        doc.save(output_path)
+    except FileNotFoundError:
+        logger.error(f"Template file not found at: {template_path}")
+        raise
+    except Exception as e:
+        logger.error(f"An unexpected error occurred while processing the Word document: {e}")
+        raise
 
 def generate_resume_and_cover(job_position, company_name, specific_job_project, required_it_skills):
     """Generates a customized resume and cover letter based on provided job details."""
@@ -36,8 +43,12 @@ def generate_resume_and_cover(job_position, company_name, specific_job_project, 
     folder_date = datetime.datetime.now().strftime("%m%d%y")
     
     # Output folder setup
-    output_folder = os.path.join(PROJECT_ROOT, "output", f"{company_name}_{folder_date}")
-    os.makedirs(output_folder, exist_ok=True)
+    try:
+        output_folder = os.path.join(PROJECT_ROOT, "output", f"{company_name}_{folder_date}")
+        os.makedirs(output_folder, exist_ok=True)
+    except OSError as e:
+        logger.error(f"Error creating output directory: {e}")
+        return None
     
     # File paths
     resume_template = os.path.join(PROJECT_ROOT, "static", "resume_template.docx")
@@ -55,8 +66,14 @@ def generate_resume_and_cover(job_position, company_name, specific_job_project, 
     }
     
     # Process documents
-    process_word_document(resume_template, resume_output, replacements)
-    process_word_document(cover_letter_template, cover_letter_output, replacements)
+    try:
+        process_word_document(resume_template, resume_output, replacements)
+        process_word_document(cover_letter_template, cover_letter_output, replacements)
+    except FileNotFoundError:
+        return None
+    except Exception as e:
+        logger.error(f"An unexpected error occurred during document generation: {e}")
+        return None
     
     logger.info(f"Customized resume saved at: {resume_output}")
     logger.info(f"Customized cover letter saved at: {cover_letter_output}")

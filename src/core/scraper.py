@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import nltk
 from nltk.corpus import stopwords
 from src.logger import logger
-from selenium.common.exceptions import WebDriverException
+from selenium.common.exceptions import WebDriverException, TimeoutException, InvalidArgumentException
 
 # Download stop words
 nltk.download('stopwords')
@@ -21,8 +21,17 @@ def scrape_job_posting(url):
         driver.get(url)
         page_text = driver.page_source  # Get full rendered page source
         driver.quit()
+    except InvalidArgumentException:
+        logger.error(f"Invalid URL provided: {url}")
+        return None
+    except TimeoutException:
+        logger.error(f"Timeout while trying to load URL: {url}")
+        return None
     except WebDriverException as e:
         logger.error(f"Error with Selenium WebDriver: {e}")
+        return None
+    except Exception as e:
+        logger.error(f"An unexpected error occurred during scraping: {e}")
         return None
     
     # Parse the page with BeautifulSoup to extract readable text
