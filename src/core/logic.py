@@ -1,4 +1,6 @@
-from src.core.scraper import extract_job_details, save_job_to_csv
+from src.core.scraper import scrape_job_posting
+from src.core.ai_extractor import extract_job_details_from_text
+from src.core.file_handler import save_job_to_csv
 from src.core.generator import generate_resume_and_cover
 from src.logger import logger
 
@@ -8,7 +10,12 @@ def scrape_job_details_logic(url):
         logger.error("No URL provided for scraping.")
         raise ValueError("Please enter a job URL.")
 
-    job_details = extract_job_details(url)
+    minimized_text = scrape_job_posting(url)
+    if not minimized_text:
+        logger.error("Failed to scrape job posting.")
+        return None
+
+    job_details = extract_job_details_from_text(minimized_text)
     if job_details:
         logger.info("Successfully extracted job details.")
         save_job_to_csv(job_details, url)
